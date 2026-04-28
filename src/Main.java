@@ -8,16 +8,18 @@ public class Main {
         boolean running = true;
 
         while (running) {
-            System.out.println("\n===== Travel Management System =====");
-            System.out.println("1. Add Customer");
+            System.out.println("\n===== Welcome to Travel Management System! =====");
+            System.out.println("1. Create a new customer profile");
             System.out.println("2. Add Booking");
             System.out.println("3. View Customers");
             System.out.println("4. View Bookings");
-            System.out.println("5. Add Travel Package");
+            System.out.println("5. Book a Travel Package");
             System.out.println("6. View Packages");
-            System.out.println("7. Make Payment");
+            System.out.println("7. Process Payment");
             System.out.println("8. View Payments");
             System.out.println("9. Delete Booking");
+            System.out.println("10. Test Multi-threaded Bookings");
+            System.out.println("11. Simulate 50 Users Booking at Once");
             System.out.println("0. Exit");
             System.out.print("Choose option: ");
 
@@ -172,6 +174,110 @@ public class Main {
                     System.out.print("Enter Booking ID to delete: ");
                     int deleteID = input.nextInt();
                     system.deleteBooking(deleteID);
+                    break;
+
+                case 10:
+                    Customer threadCustomer = new Customer(
+                            999,
+                            "Thread Test Customer",
+                            "threadtest@email.com",
+                            "Credit Card"
+                    );
+
+                    system.addCustomer(threadCustomer);
+
+                    Booking flightBooking = new FlightBooking(
+                            1001,
+                            threadCustomer,
+                            "01/06/2026",
+                            "10/06/2026",
+                            450.00,
+                            "British Airways - London to Rome"
+                    );
+
+                    Booking hotelBooking = new HotelBooking(
+                            1002,
+                            threadCustomer,
+                            "01/06/2026",
+                            "10/06/2026",
+                            900.00,
+                            "Rome City Hotel - 9 nights"
+                    );
+
+                    Booking carBooking = new RentalCarBooking(
+                            1003,
+                            threadCustomer,
+                            "01/06/2026",
+                            "10/06/2026",
+                            300.00,
+                            "Fiat 500 Rental Car"
+                    );
+
+                    Thread bookingThread1 = new Thread(new BookingTask(system, flightBooking), "Flight Booking Thread");
+                    Thread bookingThread2 = new Thread(new BookingTask(system, hotelBooking), "Hotel Booking Thread");
+                    Thread bookingThread3 = new Thread(new BookingTask(system, carBooking), "Rental Car Booking Thread");
+
+                    bookingThread1.start();
+                    bookingThread2.start();
+                    bookingThread3.start();
+
+                    try {
+                        bookingThread1.join();
+                        bookingThread2.join();
+                        bookingThread3.join();
+                    } catch (InterruptedException e) {
+                        System.out.println("Thread interrupted: " + e.getMessage());
+                    }
+
+                    System.out.println("Multi-threaded booking test completed.");
+                    break;
+
+                case 11:
+                    System.out.println("Starting 50-user multi-threaded booking simulation...");
+
+                    Thread[] bookingThreads = new Thread[50];
+
+                    for (int i = 0; i < 50; i++) {
+                        int userNumber = i + 1;
+
+                        Customer simulationCustomer = new Customer(
+                                2000 + userNumber,
+                                "Simulation Customer " + userNumber,
+                                "customer" + userNumber + "@email.com",
+                                "Credit Card"
+                        );
+
+                        system.addCustomer(simulationCustomer);
+
+                        Booking simulationBooking = new FlightBooking(
+                                3000 + userNumber,
+                                simulationCustomer,
+                                "15/07/2026",
+                                "22/07/2026",
+                                250.00 + userNumber,
+                                "Simulation Flight " + userNumber + " - London to Madrid"
+                        );
+
+                        bookingThreads[i] = new Thread(
+                                new BookingTask(system, simulationBooking),
+                                "Booking Thread " + userNumber
+                        );
+                    }
+
+                    for (Thread bookingThread : bookingThreads) {
+                        bookingThread.start();
+                    }
+
+                    try {
+                        for (Thread bookingThread : bookingThreads) {
+                            bookingThread.join();
+                        }
+                    } catch (InterruptedException e) {
+                        System.out.println("50-user simulation interrupted: " + e.getMessage());
+                    }
+
+                    System.out.println("50-user booking simulation completed successfully.");
+                    System.out.println("Choose option 4 to view all bookings.");
                     break;
 
                 case 0:

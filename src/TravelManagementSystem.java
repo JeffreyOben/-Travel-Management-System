@@ -7,6 +7,7 @@ public class TravelManagementSystem {
     private ArrayList<TravelPackage> packages = new ArrayList<>();
     private ArrayList<Payment> payments = new ArrayList<>();
 
+    // ================= CUSTOMER =================
     public void addCustomer(Customer customer) {
         customers.add(customer);
         System.out.println("Customer added successfully.");
@@ -21,6 +22,7 @@ public class TravelManagementSystem {
         return null;
     }
 
+    // ================= BOOKING =================
     public Booking findBooking(int bookingID) {
         for (Booking booking : bookings) {
             if (booking.getBookingID() == bookingID) {
@@ -30,9 +32,12 @@ public class TravelManagementSystem {
         return null;
     }
 
-    public void addBooking(Booking booking) {
+    // 🔥 THREAD-SAFE BOOKING
+    public synchronized void addBooking(Booking booking) {
         bookings.add(booking);
-        System.out.println("Booking added successfully.");
+
+        System.out.println(Thread.currentThread().getName()
+                + " added booking ID: " + booking.getBookingID());
     }
 
     public void deleteBooking(int bookingID) {
@@ -46,16 +51,24 @@ public class TravelManagementSystem {
         }
     }
 
+    // ================= PACKAGE =================
     public void addPackage(TravelPackage travelPackage) {
         packages.add(travelPackage);
         System.out.println("Travel package added successfully.");
     }
 
-    public void addPayment(Payment payment) {
+    // 🔥 THREAD-SAFE PAYMENT
+    public synchronized void addPayment(Payment payment) {
         payments.add(payment);
+
+        System.out.println(Thread.currentThread().getName()
+                + " is processing payment for booking ID: "
+                + payment.getBooking().getBookingID());
+
         payment.processPayment();
     }
 
+    // ================= DISPLAY =================
     public void displayCustomers() {
         for (Customer customer : customers) {
             customer.displayCustomer();

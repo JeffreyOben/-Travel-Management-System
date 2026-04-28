@@ -12,8 +12,25 @@ public class Payment {
         this.paymentMethod = paymentMethod;
     }
 
+    // 🔥 Required for thread-safe system
+    public Booking getBooking() {
+        return booking;
+    }
+
+    public int getPaymentID() {
+        return paymentID;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
     public void processPayment() {
-        System.out.println("Payment processed successfully.");
+        System.out.println(Thread.currentThread().getName() + " processed payment successfully.");
     }
 
     public void displayPaymentDetails() {
